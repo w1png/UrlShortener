@@ -33,7 +33,10 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteResponse(w, http.StatusCreated, url.Alias)
+  type ResponseBody struct {
+    Alias string `json:"alias"`
+  }
+	utils.WriteResponse(w, http.StatusCreated, ResponseBody{Alias: url.Alias})
 }
 
 func GetUrl(w http.ResponseWriter, r *http.Request) {
@@ -46,5 +49,8 @@ func GetUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteResponse(w, http.StatusOK, url.Url)
+  type ResponseBody struct {
+    Url string `json:"url"`
+  }
+	utils.WriteResponse(w, http.StatusOK, ResponseBody{Url: url.Url})
 }
