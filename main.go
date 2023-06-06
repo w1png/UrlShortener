@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/w1png/ozontest/models"
 	"github.com/w1png/ozontest/utils"
@@ -28,14 +27,6 @@ func onStartup() error {
 	return nil
 }
 
-func getPort() string {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	return ":" + port
-}
-
 func main() {
 	err := onStartup()
 	if err != nil {
@@ -47,7 +38,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-  server := NewApiServer(getPort())
+  server := NewApiServer(":8080")
   err = server.Run()
   if err != nil {
     log.Fatal(err)
