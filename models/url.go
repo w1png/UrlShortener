@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 
@@ -33,14 +34,11 @@ func generateUniqueAlias(attempt int) (string, error) {
 	}
 
 	alias := generateAlias()
-	db := utils.DB
-
-	var url Url
-	err := db.Where("alias = ?", alias).First(&url).Error
+	_, err := GetUrlByAlias(alias)
+	if err != nil && err.Error() == "Url not found" {
+		return alias, nil
+	}
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return alias, nil
-		}
 		return "", err
 	}
 
@@ -59,7 +57,7 @@ func NewUrl(url string) (*Url, error) {
 	}, nil
 }
 
-func (u *Url) Save() error {
+func (u *Url) SaveDB() error {
 	db := utils.DB
 
 	if err := db.Create(&u).Error; err != nil {
@@ -69,14 +67,49 @@ func (u *Url) Save() error {
 	return nil
 }
 
-func GetUrlByAlias(alias string) (*Url, error) {
+func (u *Url) SaveIM() error {
+	utils.IMUrls[u.Alias] = u.Url
+	return nil
+}
+
+func (u *Url) Save() error {
+	if utils.UseIM {
+		return u.SaveIM()
+	}
+	return u.SaveDB()
+}
+
+func GetUrlByAliasDB(alias string) (*Url, error) {
 	db := utils.DB
 
 	var url Url
 	err := db.Where("alias = ?", alias).First(&url).Error
+  if errors.Is(err, gorm.ErrRecordNotFound) {
+    return nil, fmt.Errorf("Url not found")
+  }
+
 	if err != nil {
 		return nil, err
 	}
 
 	return &url, nil
+}
+
+func GetUrlByAliasIM(alias string) (*Url, error) {
+	url, ok := utils.IMUrls[alias]
+	if !ok {
+		return nil, fmt.Errorf("Url not found")
+	}
+
+	return &Url{
+		Alias: alias,
+		Url:   url,
+	}, nil
+}
+
+func GetUrlByAlias(alias string) (*Url, error) {
+	if utils.UseIM {
+		return GetUrlByAliasIM(alias)
+	}
+	return GetUrlByAliasDB(alias)
 }

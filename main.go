@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/w1png/ozontest/models"
 	"github.com/w1png/ozontest/utils"
@@ -19,6 +20,11 @@ func autoMigrate() error {
 }
 
 func onStartup() error {
+	if os.Getenv("USE_IN_MEMORY") == "true" {
+		utils.UseIM = true
+		return nil
+	}
+
 	err := utils.InitDB()
 	if err != nil {
 		return err
@@ -33,14 +39,16 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = autoMigrate()
+	if !utils.UseIM {
+		err = autoMigrate()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	server := NewApiServer(":8080")
+	err = server.Run()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-  server := NewApiServer(":8080")
-  err = server.Run()
-  if err != nil {
-    log.Fatal(err)
-  }
 }
