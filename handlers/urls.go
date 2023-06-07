@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -17,9 +18,14 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 	var body RequestBody
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("Invalid request body"))
 		return
 	}
+
+  if body.Url == "" {
+    utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("Invalid request body"))
+    return
+  }
 
 	url, err := models.NewUrl(body.Url)
 	if err != nil {

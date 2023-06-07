@@ -37,6 +37,30 @@ func TestUrl(t *testing.T) {
   assert.NotNil(t, testValidUrl.Url)
   assert.NotNil(t, testValidUrl.Alias)
 
+  url = []byte(`{"url": "http://www.google.com"`)
+  req, err = http.NewRequest("POST", "/urls", bytes.NewBuffer(url))
+  assert.Nil(t, err)
+
+  rr = httptest.NewRecorder()
+  handler = http.HandlerFunc(CreateUrl)
+  handler.ServeHTTP(rr, req)
+
+  assert.Equal(t, http.StatusBadRequest, rr.Code)
+  assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+  assert.Equal(t, "{\"error\":\"Invalid request body\"}\n", rr.Body.String())
+
+  url = []byte(`{"invalidThing": "https://google.com"}`)
+  req, err = http.NewRequest("POST", "/urls", bytes.NewBuffer(url))
+  assert.Nil(t, err)
+
+  rr = httptest.NewRecorder()
+  handler = http.HandlerFunc(CreateUrl)
+  handler.ServeHTTP(rr, req)
+
+  assert.Equal(t, http.StatusBadRequest, rr.Code)
+  assert.Equal(t, "application/json", rr.Header().Get("Content-Type"))
+  assert.Equal(t, "{\"error\":\"Invalid request body\"}\n", rr.Body.String())
+
 
   req, err = http.NewRequest("GET", "/urls/" + testValidUrl.Alias, nil)
   assert.Nil(t, err)
