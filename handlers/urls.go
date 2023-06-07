@@ -50,6 +50,11 @@ func GetUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+  if url.Url == "" || url.Alias == "" {
+    utils.WriteError(w, http.StatusNotFound, err)
+    return
+  }
+
   type ResponseBody struct {
     Url string `json:"url"`
     Alias string `json:"alias"`
