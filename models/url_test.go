@@ -4,7 +4,7 @@ import (
   "testing"
   "github.com/stretchr/testify/assert"
 
-  "github.com/w1png/ozontest/utils"
+  "github.com/w1png/ozontask/utils"
 )
 
 func TestUrl(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/w1png/ozontest/models"
-	"github.com/w1png/ozontest/utils"
+	"github.com/w1png/ozontask/models"
+	"github.com/w1png/ozontask/utils"
 )
 
 func autoMigrate() error {

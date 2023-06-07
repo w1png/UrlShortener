@@ -1,4 +1,4 @@
-module github.com/w1png/ozontest
+module github.com/w1png/ozontask
 
 go 1.20
 

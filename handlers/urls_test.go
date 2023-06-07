@@ -10,8 +10,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/w1png/ozontest/models"
-	"github.com/w1png/ozontest/utils"
+	"github.com/w1png/ozontask/models"
+	"github.com/w1png/ozontask/utils"
 )
 
 func TestUrl(t *testing.T) {

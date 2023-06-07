@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/w1png/ozontest/utils"
+	"github.com/w1png/ozontask/utils"
 	"gorm.io/gorm"
 )
 
