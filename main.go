@@ -25,7 +25,7 @@ func onStartup() error {
 		return nil
 	}
 
-	err := utils.InitDB()
+	err := utils.InitDB(false)
 	if err != nil {
 		return err
 	}

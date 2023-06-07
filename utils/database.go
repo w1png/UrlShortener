@@ -10,7 +10,7 @@ import (
 
 var DB *gorm.DB
 
-func CreateDSN() (string, error) {
+func CreateDSN(is_test bool) (string, error) {
 	host := os.Getenv("POSTGRES_HOST")
 	if host == "" {
 		return "", fmt.Errorf("POSTGRES_HOST is not set")
@@ -21,9 +21,17 @@ func CreateDSN() (string, error) {
 		return "", fmt.Errorf("POSTGRES_PORT is not set")
 	}
 
-	db_name := os.Getenv("POSTGRES_DBNAME")
+  var db_name_var string
+  
+  if is_test {
+    db_name_var = "POSTGRES_DBNAME_TEST"
+  } else {
+    db_name_var = "POSTGRES_DBNAME"
+  }
+
+	db_name := os.Getenv(db_name_var)
 	if db_name == "" {
-		return "", fmt.Errorf("POSTGRES_DBNAME is not set")
+		return "", fmt.Errorf("%s is not set", db_name_var)
 	}
 
 	user := os.Getenv("POSTGRES_USER")
@@ -40,8 +48,8 @@ func CreateDSN() (string, error) {
 	return dsn, nil
 }
 
-func ConnectDB() (*gorm.DB, error) {
-	dsn, err := CreateDSN()
+func connectDB(is_test bool) (*gorm.DB, error) {
+	dsn, err := CreateDSN(is_test)
 	if err != nil {
 		return nil, err
 	}
@@ -55,8 +63,8 @@ func ConnectDB() (*gorm.DB, error) {
 	return db, nil
 }
 
-func InitDB() error {
-	db, err := ConnectDB()
+func InitDB(is_test bool) error {
+	db, err := connectDB(is_test)
 	if err != nil {
 		return err
 	}
