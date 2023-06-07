@@ -57,7 +57,7 @@ func NewUrl(url string) (*Url, error) {
 	}, nil
 }
 
-func (u *Url) SaveDB() error {
+func (u *Url) saveDB() error {
 	db := utils.DB
 
 	if err := db.Create(&u).Error; err != nil {
@@ -67,19 +67,19 @@ func (u *Url) SaveDB() error {
 	return nil
 }
 
-func (u *Url) SaveIM() error {
+func (u *Url) saveIM() error {
 	utils.IMUrls[u.Alias] = u.Url
 	return nil
 }
 
 func (u *Url) Save() error {
 	if utils.UseIM {
-		return u.SaveIM()
+		return u.saveIM()
 	}
-	return u.SaveDB()
+	return u.saveDB()
 }
 
-func GetUrlByAliasDB(alias string) (*Url, error) {
+func getUrlByAliasDB(alias string) (*Url, error) {
 	db := utils.DB
 
 	var url Url
@@ -95,7 +95,7 @@ func GetUrlByAliasDB(alias string) (*Url, error) {
 	return &url, nil
 }
 
-func GetUrlByAliasIM(alias string) (*Url, error) {
+func getUrlByAliasIM(alias string) (*Url, error) {
 	url, ok := utils.IMUrls[alias]
 	if !ok {
 		return nil, fmt.Errorf("Url not found")
@@ -109,7 +109,7 @@ func GetUrlByAliasIM(alias string) (*Url, error) {
 
 func GetUrlByAlias(alias string) (*Url, error) {
 	if utils.UseIM {
-		return GetUrlByAliasIM(alias)
+		return getUrlByAliasIM(alias)
 	}
-	return GetUrlByAliasDB(alias)
+	return getUrlByAliasDB(alias)
 }
