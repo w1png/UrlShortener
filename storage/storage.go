@@ -1,0 +1,33 @@
+package storage
+
+import (
+	"os"
+
+	"github.com/w1png/ozontask/models"
+)
+
+var SelectedStorage UrlStorage
+
+func InitSelectedStorage() StorageError {
+	switch os.Getenv("STORAGE_TYPE") {
+	case "in_memory":
+		SelectedStorage = NewInMemoryStorage()
+	case "postgres":
+    var err error
+		SelectedStorage, err = NewPostgresStorage(false)
+		if err != nil {
+			return err
+		}
+	}
+
+  if SelectedStorage == nil {
+    return NewEnvironmentVariableError("STORAGE_TYPE is empty")
+  }
+
+	return nil
+}
+
+type UrlStorage interface {
+	Save(url *models.Url) StorageError
+	GetByAlias(alias string) (*models.Url, StorageError)
+}

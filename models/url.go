@@ -1,11 +1,8 @@
 package models
 
 import (
-	"errors"
-	"fmt"
 	"math/rand"
 
-	"github.com/w1png/ozontask/utils"
 	"gorm.io/gorm"
 )
 
@@ -28,88 +25,12 @@ func generateAlias() string {
 	return alias
 }
 
-func generateUniqueAlias(attempt int) (string, error) {
-	if attempt > MAX_ATTEMPTS {
-		return "", fmt.Errorf("Could not generate unique alias after %d attempts", MAX_ATTEMPTS)
-	}
-
+func NewUrl(url string) *Url {
 	alias := generateAlias()
-	_, err := GetUrlByAlias(alias)
-	if err != nil && err.Error() == "Url not found" {
-		return alias, nil
-	}
-	if err != nil {
-		return "", err
-	}
-
-	return generateUniqueAlias(attempt + 1)
-}
-
-func NewUrl(url string) (*Url, error) {
-	alias, err := generateUniqueAlias(0)
-	if err != nil {
-		return nil, err
-	}
 
 	return &Url{
 		Alias: alias,
 		Url:   url,
-	}, nil
-}
-
-func (u *Url) saveDB() error {
-	db := utils.DB
-
-	if err := db.Create(&u).Error; err != nil {
-		return err
 	}
-
-	return nil
 }
 
-func (u *Url) saveIM() error {
-	utils.IMUrls[u.Alias] = u.Url
-	return nil
-}
-
-func (u *Url) Save() error {
-	if utils.UseIM {
-		return u.saveIM()
-	}
-	return u.saveDB()
-}
-
-func getUrlByAliasDB(alias string) (*Url, error) {
-	db := utils.DB
-
-	var url Url
-	err := db.Where("alias = ?", alias).First(&url).Error
-  if errors.Is(err, gorm.ErrRecordNotFound) {
-    return nil, fmt.Errorf("Url not found")
-  }
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &url, nil
-}
-
-func getUrlByAliasIM(alias string) (*Url, error) {
-	url, ok := utils.IMUrls[alias]
-	if !ok {
-		return nil, fmt.Errorf("Url not found")
-	}
-
-	return &Url{
-		Alias: alias,
-		Url:   url,
-	}, nil
-}
-
-func GetUrlByAlias(alias string) (*Url, error) {
-	if utils.UseIM {
-		return getUrlByAliasIM(alias)
-	}
-	return getUrlByAliasDB(alias)
-}

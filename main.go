@@ -2,14 +2,14 @@ package main
 
 import (
 	"log"
-	"os"
+	"reflect"
 
 	"github.com/w1png/ozontask/models"
-	"github.com/w1png/ozontask/utils"
+	"github.com/w1png/ozontask/storage"
 )
 
 func autoMigrate() error {
-	db := utils.DB
+	db := storage.SelectedStorage.(*storage.PostgresStorage).DB
 
 	err := db.AutoMigrate(&models.Url{})
 	if err != nil {
@@ -20,12 +20,7 @@ func autoMigrate() error {
 }
 
 func onStartup() error {
-	if os.Getenv("USE_IN_MEMORY") == "true" {
-		utils.UseIM = true
-		return nil
-	}
-
-	err := utils.InitDB(false)
+	err := storage.InitSelectedStorage()
 	if err != nil {
 		return err
 	}
@@ -39,7 +34,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if !utils.UseIM {
+	if reflect.TypeOf(storage.SelectedStorage) == reflect.TypeOf(&storage.PostgresStorage{}) {
 		err = autoMigrate()
 		if err != nil {
 			log.Fatal(err)

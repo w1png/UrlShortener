@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/gorilla/mux"
 	"github.com/w1png/ozontask/models"
+	"github.com/w1png/ozontask/storage"
 	"github.com/w1png/ozontask/utils"
 )
 
@@ -18,22 +19,27 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
 	var body RequestBody
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("Invalid request body"))
+		utils.WriteError(w, http.StatusBadRequest, NewInvalidRequestBodyError(err.Error()))
 		return
 	}
 
   if body.Url == "" {
-    utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("Invalid request body"))
+    utils.WriteError(w, http.StatusBadRequest, NewInvalidRequestBodyError("Url is empty"))
     return
   }
 
-	url, err := models.NewUrl(body.Url)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
-		return
-	}
+  url := models.NewUrl(body.Url)
+  _, err = storage.SelectedStorage.GetByAlias(url.Alias)
+  if err == nil && url != nil {
+    utils.WriteError(w, http.StatusInternalServerError, NewUniqueAliasError("Failed to create unique alias"))
+    return
+  }
+  if err != nil && reflect.TypeOf(err) != reflect.TypeOf(&storage.NotFoundError{}) {
+    utils.WriteError(w, http.StatusInternalServerError, err)
+    return
+  }
 
-	err = url.Save()
+	err = storage.SelectedStorage.Save(url)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
@@ -50,11 +56,11 @@ func GetUrl(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	alias := vars["alias"]
 
-	url, err := models.GetUrlByAlias(alias)
-	if err != nil {
-		utils.WriteError(w, http.StatusNotFound, err)
-		return
-	}
+	url, err := storage.SelectedStorage.GetByAlias(alias)
+  if err != nil {
+    utils.WriteError(w, http.StatusNotFound, err)
+    return
+  }
 
   if url.Url == "" || url.Alias == "" {
     utils.WriteError(w, http.StatusNotFound, err)
