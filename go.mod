@@ -1,4 +1,4 @@
-module github.com/w1png/ozontask
+module github.com/w1png/urlshortener
 
 go 1.20
 
