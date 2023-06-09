@@ -49,7 +49,7 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
     Url string `json:"url"`
     Alias string `json:"alias"`
   }
-	utils.WriteResponse(w, http.StatusCreated, ResponseBody{Url: url.Url, Alias: url.Alias})
+	utils.WriteResponse(w, http.StatusOK, ResponseBody{Url: url.Url, Alias: url.Alias})
 }
 
 func GetUrl(w http.ResponseWriter, r *http.Request) {

@@ -8,7 +8,6 @@ import (
 
 const ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
 const ALIAS_LENGTH = 10
-const MAX_ATTEMPTS = 20
 
 type Url struct {
 	gorm.Model
