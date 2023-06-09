@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/w1png/ozontask/models"
+	"github.com/w1png/urlshortener/models"
 )
 
 func TestNewInMemoryStorage(t *testing.T) {

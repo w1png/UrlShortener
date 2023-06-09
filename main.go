@@ -4,8 +4,8 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/w1png/ozontask/models"
-	"github.com/w1png/ozontask/storage"
+	"github.com/w1png/urlshortener/models"
+	"github.com/w1png/urlshortener/storage"
 )
 
 func autoMigrate() error {

@@ -3,7 +3,7 @@ package storage
 import (
 	"os"
 
-	"github.com/w1png/ozontask/models"
+	"github.com/w1png/urlshortener/models"
 )
 
 var SelectedStorage UrlStorage

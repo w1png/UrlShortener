@@ -3,7 +3,7 @@ package storage
 import (
 	"fmt"
 
-	"github.com/w1png/ozontask/models"
+	"github.com/w1png/urlshortener/models"
 )
 
 type InMemoryStorage struct{

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/w1png/ozontask/handlers"
+	"github.com/w1png/urlshortener/handlers"
 )
 
 type ApiServer struct {

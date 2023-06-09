@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/w1png/ozontask/models"
+	"github.com/w1png/urlshortener/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
   "gorm.io/gorm/logger"

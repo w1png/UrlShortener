@@ -11,8 +11,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/w1png/ozontask/models"
-	"github.com/w1png/ozontask/storage"
+	"github.com/w1png/urlshortener/models"
+	"github.com/w1png/urlshortener/storage"
 )
 
 type ErrorResponse struct {

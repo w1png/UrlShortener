@@ -6,9 +6,9 @@ import (
 	"reflect"
 
 	"github.com/gorilla/mux"
-	"github.com/w1png/ozontask/models"
-	"github.com/w1png/ozontask/storage"
-	"github.com/w1png/ozontask/utils"
+	"github.com/w1png/urlshortener/models"
+	"github.com/w1png/urlshortener/storage"
+	"github.com/w1png/urlshortener/utils"
 )
 
 func CreateUrl(w http.ResponseWriter, r *http.Request) {
