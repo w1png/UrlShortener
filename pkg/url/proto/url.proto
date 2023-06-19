@@ -1,0 +1,30 @@
+syntax="proto3";
+
+option go_package="./proto";
+
+package url_service;
+
+service UrlService {
+  rpc CreateUrl(CreateRequest) returns (CreateResponse) {}
+  rpc GetUrl(GetRequest) returns (GetResponse) {}
+}
+
+message CreateRequest {
+  string url = 1;
+}
+
+message CreateResponse {
+  string url = 1;
+  string alias = 2;
+}
+
+message GetRequest {
+  string alias = 1;
+}
+
+message GetResponse {
+  string url = 1;
+  string alias = 2;
+}
+
+

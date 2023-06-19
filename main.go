@@ -41,7 +41,7 @@ func main() {
 		}
 	}
 
-	server := NewApiServer(":8080")
+	server := NewApiServer(":8081")
 	err = server.Run()
 	if err != nil {
 		log.Fatal(err)
