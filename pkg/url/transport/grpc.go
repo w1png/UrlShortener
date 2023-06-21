@@ -2,7 +2,6 @@ package transport
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/w1png/urlshortener/pkg/url/endpoints"
 	pb "github.com/w1png/urlshortener/pkg/url/proto"
@@ -33,7 +32,6 @@ func NewGRPCServer(endpoints endpoints.Set) pb.UrlServiceServer {
 }
 
 func (s *grpcServer) CreateUrl(ctx context.Context, req *pb.CreateRequest) (*pb.CreateResponse, error) {
-  fmt.Println("CreateUrl")
   _, resp, err := s.createUrlHandler.ServeGRPC(ctx, req)
   if err != nil {
     return nil, err
@@ -46,6 +44,7 @@ func (s *grpcServer) GetUrl(ctx context.Context, req *pb.GetRequest) (*pb.GetRes
   if err != nil {
     return nil, err
   }
+
   return resp.(*pb.GetResponse), nil
 }
 

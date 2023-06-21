@@ -35,9 +35,9 @@ func MakeGetUrlEndpoint(svc url.Service) endpoint.Endpoint {
     req := request.(GetUrlRequest)
     url, err := svc.GetUrl(req.Alias)
     if err != nil {
-      return GetUrlResponse{url.Url, url.Alias}, nil
+      return GetUrlResponse{}, err
     }
-    return nil, err
+    return GetUrlResponse{url.Url, url.Alias}, nil
   }
 }
 
