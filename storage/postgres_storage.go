@@ -16,32 +16,34 @@ type PostgresStorage struct {
 }
 
 func (ps *PostgresStorage) generateDSN(is_test bool) (string, StorageError) {
-	host := os.Getenv("POSTGRES_HOST")
-	if host == "" {
+  host, ok := os.LookupEnv("POSTGRES_HOST")
+	if !ok {
 		return "", NewEnvironmentVariableError("POSTGRES_HOST")
 	}
 
-	port := os.Getenv("POSTGRES_PORT")
-	if port == "" {
+  port, ok := os.LookupEnv("POSTGRES_PORT")
+	if !ok {
 		return "", NewEnvironmentVariableError("POSTGRES_PORT")
 	}
 
-	user := os.Getenv("POSTGRES_USER")
-	if user == "" {
+	user, ok := os.LookupEnv("POSTGRES_USER")
+  if !ok {
 		return "", NewEnvironmentVariableError("POSTGRES_USER")
 	}
 
-	password := os.Getenv("POSTGRES_PASSWORD")
-	if password == "" {
+	password, ok := os.LookupEnv("POSTGRES_PASSWORD")
+	if !ok {
 		return "", NewEnvironmentVariableError("POSTGRES_PASSWORD")
 	}
 
-	dbname := os.Getenv("POSTGRES_DBNAME")
+  dbname_var := "POSTGRES_DBNAME"
   if is_test {
-    dbname = os.Getenv("POSTGRES_TEST_DBNAME")
+    dbname_var = "POSTGRES_TEST_DBNAME"
   }
-	if dbname == "" {
-		return "", NewEnvironmentVariableError("POSTGRES_DBNAME")
+
+	dbname, ok := os.LookupEnv(dbname_var)
+  if !ok {
+		return "", NewEnvironmentVariableError(dbname_var)
 	}
 
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname), nil
