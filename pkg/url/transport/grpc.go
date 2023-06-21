@@ -50,13 +50,11 @@ func (s *grpcServer) GetUrl(ctx context.Context, req *pb.GetRequest) (*pb.GetRes
 }
 
 func decodeGRPCCreateUrlRequest(_ context.Context, grpcReq interface{}) (interface{}, error) {
-  fmt.Println("decodeGRPCCreateUrlRequest")
   req := grpcReq.(*pb.CreateRequest)
   return endpoints.CreateUrlRequest{Url: req.Url}, nil
 }
 
 func encodeGRPCCreateUrlResponse(_ context.Context, response interface{}) (interface{}, error) {
-  fmt.Println("encodeGRPCCreateUrlResponse")
   resp := response.(endpoints.CreateUrlResponse)
   return &pb.CreateResponse{Url: resp.Url, Alias: resp.Alias}, nil
 }

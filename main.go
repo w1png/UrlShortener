@@ -41,6 +41,7 @@ func main() {
 		}
 	}
 
+  log.Println("Starting http server on port 8081")
 	server := NewApiServer(":8081")
 	err = server.Run()
 	if err != nil {

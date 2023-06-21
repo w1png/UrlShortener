@@ -2,7 +2,6 @@ package endpoints
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/w1png/urlshortener/pkg/url"
@@ -22,7 +21,6 @@ func NewSet(svc url.Service) Set {
 
 func MakeCreateUrlEndpoint(svc url.Service) endpoint.Endpoint {
   return func(ctx context.Context, request interface{}) (interface{}, error) {
-    fmt.Println("MakeCreateUrlEndpoint")
     req := request.(CreateUrlRequest)
     url, err := svc.CreateUrl(req.Url)
     if err != nil {

@@ -34,5 +34,7 @@ func main() {
 
   server := grpc.NewServer()
   pb.RegisterUrlServiceServer(server, grpcServer)
+
+  log.Printf("Starting gRPC server on port %s", port)
   server.Serve(listener)
 }
