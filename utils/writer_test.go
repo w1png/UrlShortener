@@ -14,42 +14,47 @@ type TestObject struct {
   Alias string `json:"alias"`
 }
 
-func TestWriteResponse(t *testing.T) {
+func TestWriteResponse_StatusOK(t *testing.T) {
   w := httptest.NewRecorder()
   WriteResponse(w, http.StatusOK, "test")
   assert.Equal(t, http.StatusOK, w.Code)
+}
 
-  testObj := TestObject{Url: "http://www.google.com", Alias: "google"}
-  w = httptest.NewRecorder()
-  WriteResponse(w, http.StatusCreated, testObj)
-  assert.Equal(t, http.StatusCreated, w.Code)
-
-  w = httptest.NewRecorder()
+func TestWriteResponse_StatusNotFound(t *testing.T) {
+  w := httptest.NewRecorder()
   WriteResponse(w, http.StatusNotFound, nil)
   assert.Equal(t, http.StatusNotFound, w.Code)
+}
 
-  w = httptest.NewRecorder()
+func TestWriteResponse_StatusInternalServerError(t *testing.T) {
+  w := httptest.NewRecorder()
   WriteResponse(w, http.StatusInternalServerError, nil)
   assert.Equal(t, http.StatusInternalServerError, w.Code)
+}
 
-  w = httptest.NewRecorder()
+func TestWriteResponse_StatusBadRequest(t *testing.T) {
+  w := httptest.NewRecorder()
   WriteResponse(w, http.StatusBadRequest, nil)
   assert.Equal(t, http.StatusBadRequest, w.Code)
 }
 
-func TestWriteError(t *testing.T) {
+func TestWriteError_String(t *testing.T) {
   w := httptest.NewRecorder()
-  WriteError(w, http.StatusNotFound, fmt.Errorf("test error"))
+  WriteError(w, http.StatusNotFound, "test error")
   assert.Equal(t, http.StatusNotFound, w.Code)
+  assert.Equal(t, "{\"error\":\"test error\"}\n", w.Body.String())
+}
 
-  w = httptest.NewRecorder()
-  WriteError(w, http.StatusInternalServerError, fmt.Errorf("test error"))
-  assert.Equal(t, http.StatusInternalServerError, w.Code)
-
-  w = httptest.NewRecorder()
+func TestWriteError_Error(t *testing.T) {
+  w := httptest.NewRecorder()
   WriteError(w, http.StatusBadRequest, fmt.Errorf("test error"))
   assert.Equal(t, http.StatusBadRequest, w.Code)
+  assert.Equal(t, "{\"error\":\"test error\"}\n", w.Body.String())
+}
 
-  w = httptest.NewRecorder()
-  assert.Panics(t, func() { WriteError(w, http.StatusBadRequest, nil) })
+func TestWriteError_Default(t *testing.T) {
+  w := httptest.NewRecorder()
+  WriteError(w, http.StatusBadRequest, TestObject{"test", "test"})
+  assert.Equal(t, http.StatusBadRequest, w.Code)
+  assert.Equal(t, "{\"error\":\"Internal Server Error\"}\n", w.Body.String())
 }

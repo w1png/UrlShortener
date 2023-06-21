@@ -18,11 +18,9 @@ func InitSelectedStorage() StorageError {
 		if err != nil {
 			return err
 		}
+  default:
+    return NewEnvironmentVariableError("STORAGE_TYPE")
 	}
-
-  if SelectedStorage == nil {
-    return NewEnvironmentVariableError("STORAGE_TYPE is empty")
-  }
 
 	return nil
 }

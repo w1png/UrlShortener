@@ -16,32 +16,20 @@ func TestNewPostgresStorage(t *testing.T) {
 }
 
 func TestPostgresStorage_NewPostgresStorage_EnviromentVariableError(t *testing.T) {
-  host := os.Getenv("POSTGRES_HOST")
-  port := os.Getenv("POSTGRES_PORT")
-  user := os.Getenv("POSTGRES_USER")
-  password := os.Getenv("POSTGRES_PASSWORD")
-  database := os.Getenv("POSTGRES_TEST_DBNAME")
-  defer func(host, port, user, password, database string) {
-    os.Setenv("POSTGRES_HOST", host)
-    os.Setenv("POSTGRES_PORT", port)
-    os.Setenv("POSTGRES_USER", user)
-    os.Setenv("POSTGRES_PASSWORD", password)
-    os.Setenv("POSTGRES_TEST_DBNAME", database)
-  }(host, port, user, password, database)
+  vars := []string{"POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_TEST_DBNAME"}
 
-  testEnvVariableError := func(env string) {
-    os.Setenv(env, "")
+  for _, env := range vars {
+    t.Logf("Testing %s", env)
+    value := os.Getenv(env)
+    os.Unsetenv(env)
+
     storage, err := NewPostgresStorage(true)
     assert.Nil(t, storage)
     assert.NotNil(t, err)
-    assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&EnvironmentVariableError{}))
-  }
+    assert.Equal(t, reflect.TypeOf(&EnvironmentVariableError{}), reflect.TypeOf(err))
 
-  testEnvVariableError("POSTGRES_HOST")
-  testEnvVariableError("POSTGRES_PORT")
-  testEnvVariableError("POSTGRES_USER")
-  testEnvVariableError("POSTGRES_PASSWORD")
-  testEnvVariableError("POSTGRES_TEST_DBNAME")
+    os.Setenv(env, value)
+  }
 }
 
 func TestPostgresStorage_NewPostgresStorage_DatabaseConnectionError(t *testing.T) {

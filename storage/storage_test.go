@@ -30,3 +30,13 @@ func TestInitSelectedStorage_Postgres(t *testing.T) {
   assert.Equal(t, reflect.TypeOf(&PostgresStorage{}), reflect.TypeOf(SelectedStorage))
 }
 
+func TestInitSelectedStorage_EnvironmentVariableError(t *testing.T) {
+  storage_type := os.Getenv("STORAGE_TYPE")
+  defer os.Setenv("STORAGE_TYPE", storage_type)
+
+  os.Unsetenv("STORAGE_TYPE")
+  err := InitSelectedStorage()
+  assert.NotNil(t, err)
+  assert.Equal(t, "Environment variable not found: STORAGE_TYPE", err.Error())
+  assert.Equal(t, reflect.TypeOf(&EnvironmentVariableError{}), reflect.TypeOf(err))
+}
