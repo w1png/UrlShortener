@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/w1png/urlshortener/utils"
+	"google.golang.org/grpc/status"
 
 	endpoints "github.com/w1png/urlshortener/pkg/url/endpoints"
 	pb "github.com/w1png/urlshortener/pkg/url/proto"
@@ -26,6 +27,12 @@ func GetUrl(w http.ResponseWriter, r *http.Request) {
   client := pb.NewUrlServiceClient(utils.GRPCConnection)
   resp, err := client.GetUrl(ctx, &pb.GetRequest{Alias: alias})
   if err != nil {
+    grpcErr, ok := status.FromError(err)
+    if ok {
+      utils.WriteError(w, int(grpcErr.Code()), grpcErr.Message())
+      return
+    }
+
     utils.WriteError(w, http.StatusInternalServerError, err)
     return
   }
@@ -37,7 +44,7 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
   var req endpoints.CreateUrlRequest
   err := json.NewDecoder(r.Body).Decode(&req)
   if err != nil {
-    utils.WriteError(w, http.StatusBadRequest, err)
+    utils.WriteError(w, http.StatusBadRequest, NewInvalidRequestBodyError("url"))
     return
   }
 
@@ -47,6 +54,12 @@ func CreateUrl(w http.ResponseWriter, r *http.Request) {
   client := pb.NewUrlServiceClient(utils.GRPCConnection)
   resp, err := client.CreateUrl(ctx, &pb.CreateRequest{Url: req.Url})
   if err != nil {
+    grpcErr, ok := status.FromError(err)
+    if ok {
+      utils.WriteError(w, int(grpcErr.Code()), grpcErr.Message())
+      return
+    }
+
     utils.WriteError(w, http.StatusInternalServerError, err)
     return
   }

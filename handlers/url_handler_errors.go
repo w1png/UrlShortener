@@ -1,5 +1,7 @@
 package handlers
 
+import "fmt"
+
 type UrlHandlerError interface {
   Error() string
 }
@@ -10,7 +12,7 @@ type InvalidRequestBodyError struct {
 }
 
 func (e *InvalidRequestBodyError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Invalid request body: %s", e.Message)
 }
 
 func NewInvalidRequestBodyError(message string) *InvalidRequestBodyError {
@@ -23,7 +25,7 @@ type UniqueAliasError struct {
 }
 
 func (e *UniqueAliasError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Alias already exists: %s", e.Message)
 }
 
 func NewUniqueAliasError(message string) *UniqueAliasError {

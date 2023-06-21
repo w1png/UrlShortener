@@ -15,6 +15,19 @@ func WriteResponse(w http.ResponseWriter, status int, data interface{}) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func WriteError(w http.ResponseWriter, status int, err Error) {
-	WriteResponse(w, status, map[string]string{"error": err.Error()})
+func WriteError(w http.ResponseWriter, status int, err interface{}) {
+  var errorText string
+
+  switch err.(type) {
+  case string:
+    errorText = err.(string)
+  case Error:
+    errorText = err.(Error).Error()
+  default:
+    errorText = "Internal Server Error"
+  }
+
+	WriteResponse(w, status, map[string]string{
+    "error": errorText,
+  })
 }

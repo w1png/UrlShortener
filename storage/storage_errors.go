@@ -1,5 +1,7 @@
 package storage
 
+import "fmt"
+
 type StorageError interface {
   Error() string
 }
@@ -10,7 +12,7 @@ type NotFoundError struct {
 }
 
 func (e *NotFoundError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Object not found: %s", e.Message)
 }
 
 func NewNotFoundError(message string) *NotFoundError {
@@ -20,33 +22,25 @@ func NewNotFoundError(message string) *NotFoundError {
 }
 
 
-type EmptyAliasError struct {
-  Message string
-}
+type EmptyAliasError struct {}
 
 func (e *EmptyAliasError) Error() string {
-  return e.Message
+  return "Alias is empty"
 }
 
-func NewEmptyAliasError(message string) *EmptyAliasError {
-  return &EmptyAliasError{
-    Message: message,
-  }
+func NewEmptyAliasError() *EmptyAliasError {
+  return &EmptyAliasError{}
 }
 
 
-type EmptyUrlError struct {
-  Message string
-}
+type EmptyUrlError struct {}
 
 func (e *EmptyUrlError) Error() string {
-  return e.Message
+  return "Url is empty"
 }
 
-func NewEmptyUrlError(message string) *EmptyUrlError {
-  return &EmptyUrlError{
-    Message: message,
-  }
+func NewEmptyUrlError() *EmptyUrlError {
+  return &EmptyUrlError{}
 }
 
 
@@ -55,7 +49,7 @@ type UrlAlreadyExistsError struct {
 }
 
 func (e *UrlAlreadyExistsError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Url already exists: %s", e.Message)
 }
 
 func NewUrlAlreadyExistsError(message string) *UrlAlreadyExistsError {
@@ -64,33 +58,25 @@ func NewUrlAlreadyExistsError(message string) *UrlAlreadyExistsError {
   }
 }
 
-type StorageLockedError struct {
-  Message string
-}
+type StorageLockedError struct {}
 
 func (e *StorageLockedError) Error() string {
-  return e.Message
+  return "Storage locked"
 }
   
-func NewStorageLockedError(message string) *StorageLockedError {
-  return &StorageLockedError{
-    Message: message,
-  }
+func NewStorageLockedError() *StorageLockedError {
+  return &StorageLockedError{}
 }
 
 
-type UrlIsNilError struct {
-  Message string
-}
+type UrlIsNilError struct {}
 
 func (e *UrlIsNilError) Error() string {
-  return e.Message
+  return "Url is nil"
 }
 
-func NewUrlIsNilError(message string) *UrlIsNilError {
-  return &UrlIsNilError{
-    Message: message,
-  }
+func NewUrlIsNilError() *UrlIsNilError {
+  return &UrlIsNilError{}
 }
 
 
@@ -99,7 +85,7 @@ type DatabaseConnectionError struct {
 }
 
 func (e *DatabaseConnectionError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Database connection error: %s", e.Message)
 }
 
 func NewDatabaseConnectionError(message string) *DatabaseConnectionError {
@@ -114,7 +100,7 @@ type EnvironmentVariableError struct {
 }
 
 func (e *EnvironmentVariableError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Environment variable not found: %s", e.Message)
 }
 
 func NewEnvironmentVariableError(message string) *EnvironmentVariableError {
@@ -129,7 +115,7 @@ type DatabaseError struct {
 }
 
 func (e *DatabaseError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Database error: %s", e.Message)
 }
 
 func NewDatabaseError(message string) *DatabaseError {
@@ -144,7 +130,7 @@ type DatabaseQueryError struct {
 }
 
 func (e *DatabaseQueryError) Error() string {
-  return e.Message
+  return fmt.Sprintf("Database query error: %s", e.Message)
 }
 
 func NewDatabaseQueryError(message string) *DatabaseQueryError {
