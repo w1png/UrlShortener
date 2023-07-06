@@ -13,7 +13,7 @@ type RedisStorage struct {
 	client *redis.Client
 }
 
-func NewRedisStorage(is_test bool) (Storage, error) {
+func NewRedisStorage(is_test bool) (*RedisStorage, error) {
 	db := utils.ConfigInstance.RedisDatabase
 	if is_test {
 		db = utils.ConfigInstance.RedisTestDatabase
