@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/w1png/urlshortener/models"
+	"github.com/w1png/urlshortener/utils"
 )
 
 type InMemoryStorage struct{
@@ -18,9 +19,9 @@ func NewInMemoryStorage() *InMemoryStorage {
   }
 }
 
-func (s *InMemoryStorage) Save(url *models.Url) StorageError {
+func (s *InMemoryStorage) SaveUrl(url *models.Url) error {
   if s.Lock {
-    return NewStorageLockedError()
+    return utils.NewStorageLockedError()
   }
 
   s.Lock = true
@@ -29,17 +30,17 @@ func (s *InMemoryStorage) Save(url *models.Url) StorageError {
   }()
 
   if url == nil {
-    return NewUrlIsNilError()
+    return utils.NewUrlIsNilError()
   }
   if url.Alias == "" {
-    return NewEmptyAliasError()
+    return utils.NewEmptyAliasError()
   }
   if url.Url == "" {
-    return NewEmptyUrlError()
+    return utils.NewEmptyUrlError()
   }
 
   if _, ok := s.Storage[url.Alias]; ok {
-    return NewUrlAlreadyExistsError(fmt.Sprintf("url with alias %s", url.Alias))
+    return utils.NewUrlAlreadyExistsError(fmt.Sprintf("url with alias %s", url.Alias))
   }
 
   s.Storage[url.Alias] = url.Url
@@ -47,9 +48,9 @@ func (s *InMemoryStorage) Save(url *models.Url) StorageError {
   return nil
 }
 
-func (s *InMemoryStorage) GetByAlias(alias string) (*models.Url, StorageError) {
+func (s *InMemoryStorage) GetUrlByAlias(alias string) (*models.Url, error) {
   if alias == "" {
-    return nil, NewEmptyAliasError()
+    return nil, utils.NewEmptyAliasError()
   }
 
   if url, ok := s.Storage[alias]; ok {
@@ -59,6 +60,6 @@ func (s *InMemoryStorage) GetByAlias(alias string) (*models.Url, StorageError) {
     }, nil
   } 
 
-  return nil, NewNotFoundError(fmt.Sprintf("url with alias %s not found", alias))
+  return nil, utils.NewNotFoundError(fmt.Sprintf("url with alias %s not found", alias))
 }
 

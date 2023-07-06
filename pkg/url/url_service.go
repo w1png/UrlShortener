@@ -7,18 +7,17 @@ import (
 
 type urlService struct {}
 
-func (s *urlService) CreateUrl(urlBase string) (Url, storage.StorageError) {
+func (s *urlService) CreateUrl(urlBase string) (Url, error) {
   url := models.NewUrl(urlBase)
-  err := storage.SelectedStorage.Save(url)
-  
+  err := storage.SelectedStorage.SaveUrl(url)
   if err != nil {
     return Url{}, err
   }
   return Url{url.Url, url.Alias}, nil
 }
 
-func (s *urlService) GetUrl(alias string) (Url, storage.StorageError) {
-  url, err := storage.SelectedStorage.GetByAlias(alias)
+func (s *urlService) GetUrl(alias string) (Url, error) {
+  url, err := storage.SelectedStorage.GetUrlByAlias(alias)
   if err != nil {
     return Url{}, err
   }

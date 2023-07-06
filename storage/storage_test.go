@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/w1png/urlshortener/utils"
 )
 
 func TestInitSelectedStorage_InMemory(t *testing.T) {
@@ -37,6 +38,6 @@ func TestInitSelectedStorage_EnvironmentVariableError(t *testing.T) {
   os.Unsetenv("STORAGE_TYPE")
   err := InitSelectedStorage()
   assert.NotNil(t, err)
-  assert.Equal(t, "Environment variable not found: STORAGE_TYPE", err.Error())
-  assert.Equal(t, reflect.TypeOf(&EnvironmentVariableError{}), reflect.TypeOf(err))
+  assert.Equal(t, "Environment variable error: STORAGE_TYPE", err.Error())
+  assert.Equal(t, reflect.TypeOf(&utils.EnvironmentVariableError{}), reflect.TypeOf(err))
 }

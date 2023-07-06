@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
 	"reflect"
 
 	"github.com/w1png/urlshortener/handlers"
@@ -23,17 +22,17 @@ func autoMigrate() error {
 }
 
 func onStartup() error {
-	err := storage.InitSelectedStorage()
+  err := utils.ConfigInstance.Init()
+  if err != nil {
+    return err
+  }
+
+	err = storage.InitSelectedStorage()
 	if err != nil {
 		return err
 	}
 
-  grpc_host, ok := os.LookupEnv("GRPC_HOST")
-  if !ok {
-    return storage.NewEnvironmentVariableError("GRPC_HOST")
-  }
-
-  err = utils.InitGRPCConnection(grpc_host)
+  err = utils.InitGRPCConnection()
   if err != nil {
     return err
   }

@@ -4,11 +4,12 @@ import (
 	"os"
 
 	"github.com/w1png/urlshortener/models"
+	"github.com/w1png/urlshortener/utils"
 )
 
-var SelectedStorage UrlStorage
+var SelectedStorage Storage
 
-func InitSelectedStorage() StorageError {
+func InitSelectedStorage() error {
 	switch os.Getenv("STORAGE_TYPE") {
 	case "in_memory":
 		SelectedStorage = NewInMemoryStorage()
@@ -19,13 +20,13 @@ func InitSelectedStorage() StorageError {
 			return err
 		}
   default:
-    return NewEnvironmentVariableError("STORAGE_TYPE")
+    return utils.NewEnvironmentVariableError("STORAGE_TYPE")
 	}
 
 	return nil
 }
 
-type UrlStorage interface {
-	Save(url *models.Url) StorageError
-	GetByAlias(alias string) (*models.Url, StorageError)
+type Storage interface {
+	SaveUrl(url *models.Url) error
+	GetUrlByAlias(alias string) (*models.Url, error)
 }

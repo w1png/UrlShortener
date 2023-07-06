@@ -1,11 +1,6 @@
-package storage
+package utils
 
 import "fmt"
-
-type StorageError interface {
-  Error() string
-}
-
 
 type NotFoundError struct {
   Message string
@@ -100,7 +95,7 @@ type EnvironmentVariableError struct {
 }
 
 func (e *EnvironmentVariableError) Error() string {
-  return fmt.Sprintf("Environment variable not found: %s", e.Message)
+  return fmt.Sprintf("Environment variable error: %s", e.Message)
 }
 
 func NewEnvironmentVariableError(message string) *EnvironmentVariableError {
@@ -137,5 +132,31 @@ func NewDatabaseQueryError(message string) *DatabaseQueryError {
   return &DatabaseQueryError{
     Message: message,
   }
+}
+
+
+type InvalidRequestBodyError struct {
+  Message string
+}
+
+func (e *InvalidRequestBodyError) Error() string {
+  return fmt.Sprintf("Invalid request body: %s", e.Message)
+}
+
+func NewInvalidRequestBodyError(message string) *InvalidRequestBodyError {
+  return &InvalidRequestBodyError{Message: message}
+}
+
+
+type UniqueAliasError struct {
+  Message string
+}
+
+func (e *UniqueAliasError) Error() string {
+  return fmt.Sprintf("Alias already exists: %s", e.Message)
+}
+
+func NewUniqueAliasError(message string) *UniqueAliasError {
+  return &UniqueAliasError{Message: message}
 }
 

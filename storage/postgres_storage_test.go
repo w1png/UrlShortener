@@ -1,112 +1,115 @@
 package storage
 
 import (
-	"os"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/w1png/urlshortener/models"
+	"github.com/w1png/urlshortener/utils"
 )
 
+func setup() {
+  err := utils.ConfigInstance.Init()
+  if err != nil {
+    panic(err)
+  }
+}
+
 func TestNewPostgresStorage(t *testing.T) {
+  setup()
+
   storage, err := NewPostgresStorage(true)
   assert.NotNil(t, storage)
   assert.Nil(t, err)
 }
 
-func TestPostgresStorage_NewPostgresStorage_EnviromentVariableError(t *testing.T) {
-  vars := []string{"POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_USER", "POSTGRES_PASSWORD", "POSTGRES_TEST_DBNAME"}
-
-  for _, env := range vars {
-    t.Logf("Testing %s", env)
-    value := os.Getenv(env)
-    os.Unsetenv(env)
-
-    storage, err := NewPostgresStorage(true)
-    assert.Nil(t, storage)
-    assert.NotNil(t, err)
-    assert.Equal(t, reflect.TypeOf(&EnvironmentVariableError{}), reflect.TypeOf(err))
-
-    os.Setenv(env, value)
-  }
-}
-
 func TestPostgresStorage_NewPostgresStorage_DatabaseConnectionError(t *testing.T) {
-  host := os.Getenv("POSTGRES_HOST")
-  defer os.Setenv("POSTGRES_HOST", host)
+  setup()
 
-  os.Setenv("POSTGRES_HOST", "wrong_host")
+  utils.ConfigInstance.PostgresHost = "invalid host"
   storage, err := NewPostgresStorage(true)
   assert.Nil(t, storage)
   assert.NotNil(t, err)
-  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&DatabaseConnectionError{}))
+  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&utils.DatabaseConnectionError{}))
 }
 
-func TestPostgresStorage_SaveAndGet(t *testing.T) {
+func TestPostgresStorage_SaveGetUrl(t *testing.T) {
+  setup()
+
   storage, err := NewPostgresStorage(true)
   assert.NotNil(t, storage)
   assert.Nil(t, err)
 
   url := models.NewUrl("https://google.com")
-  err = storage.Save(url)
+  err = storage.SaveUrl(url)
   assert.Nil(t, err)
 
-  url2, err := storage.GetByAlias(url.Alias)
+  url2, err := storage.GetUrlByAlias(url.Alias)
   assert.Nil(t, err)
   assert.Equal(t, url, url2)
 }
 
-func TestPostgresStorage_Save_UrlIsNilError(t *testing.T) {
+func TestPostgresStorage_SaveUrl_UrlIsNilError(t *testing.T) {
+  setup()
+
   storage, err := NewPostgresStorage(true)
   assert.NotNil(t, storage)
   assert.Nil(t, err)
 
-  err = storage.Save(nil)
+  err = storage.SaveUrl(nil)
   assert.NotNil(t, err)
-  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&UrlIsNilError{}))
+  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&utils.UrlIsNilError{}))
 }
 
-func TestPostgresStorage_Save_DatabaseConnectionError(t *testing.T) {
+func TestPostgresStorage_SaveUrl_DatabaseConnectionError(t *testing.T) {
+  setup()
+
   storage, err := NewPostgresStorage(true)
   assert.NotNil(t, storage)
   assert.Nil(t, err)
 
   storage.DB = nil
   url := models.NewUrl("https://google.com")
-  err = storage.Save(url)
+  err = storage.SaveUrl(url)
   assert.NotNil(t, err)
-  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&DatabaseConnectionError{}))
+  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&utils.DatabaseConnectionError{}))
 }
 
-func TestPostgresStorage_GetByAlias_EmptyAliasError(t *testing.T) {
+func TestPostgresStorage_GetUrlByAlias_EmptyAliasError(t *testing.T) {
+  setup()
+
   storage, err := NewPostgresStorage(true)
   assert.NotNil(t, storage)
   assert.Nil(t, err)
 
-  _, err = storage.GetByAlias("")
+  _, err = storage.GetUrlByAlias("")
   assert.NotNil(t, err)
-  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&EmptyAliasError{}))
+  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&utils.EmptyAliasError{}))
 }
 
-func TestPostgresStorage_GetByAlias_DatabaseConnectionError(t *testing.T) {
+func TestPostgresStorage_GetUrlByAlias_DatabaseConnectionError(t *testing.T) {
+  setup()
+
   storage, err := NewPostgresStorage(true)
   assert.NotNil(t, storage)
   assert.Nil(t, err)
 
   storage.DB = nil
-  _, err = storage.GetByAlias("alias")
+  _, err = storage.GetUrlByAlias("alias")
   assert.NotNil(t, err)
-  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&DatabaseConnectionError{}))
+  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&utils.DatabaseConnectionError{}))
 }
 
-func TestPostgresStorage_GetByAlias_NotFoundError(t *testing.T) {
+func TestPostgresStorage_GetUrlByAlias_NotFoundError(t *testing.T) {
+  setup()
+
   storage, err := NewPostgresStorage(true)
   assert.NotNil(t, storage)
   assert.Nil(t, err)
 
-  _, err = storage.GetByAlias("alias")
+  _, err = storage.GetUrlByAlias("alias")
   assert.NotNil(t, err)
-  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&NotFoundError{}))
+  assert.Equal(t, reflect.TypeOf(err), reflect.TypeOf(&utils.NotFoundError{}))
 }
 

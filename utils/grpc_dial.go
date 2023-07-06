@@ -1,13 +1,15 @@
 package utils
 
-import "google.golang.org/grpc"
+import (
+	"google.golang.org/grpc"
+)
 
-var GRPCConnection *grpc.ClientConn
+var UrlGRPCConnection *grpc.ClientConn
 
-func InitGRPCConnection(host string) error {
+func InitGRPCConnection() error {
   var err error
 
-  GRPCConnection, err = grpc.Dial(host, grpc.WithInsecure())
+  UrlGRPCConnection, err = grpc.Dial(ConfigInstance.UrlGRPCServiceHost, grpc.WithInsecure())
   if err != nil {
     return err
   }

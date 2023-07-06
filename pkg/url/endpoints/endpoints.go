@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/w1png/urlshortener/pkg/url"
-	"github.com/w1png/urlshortener/storage"
+	"github.com/w1png/urlshortener/utils"
 	"google.golang.org/grpc/status"
 )
 
@@ -39,7 +39,7 @@ func MakeGetUrlEndpoint(svc url.Service) endpoint.Endpoint {
     req := request.(GetUrlRequest)
     url, err := svc.GetUrl(req.Alias)
     if err != nil {
-      if reflect.TypeOf(err) == reflect.TypeOf(&storage.NotFoundError{}) {
+      if reflect.TypeOf(err) == reflect.TypeOf(&utils.NotFoundError{}) {
         return CreateUrlResponse{}, status.Error(http.StatusNotFound, err.Error())
       }
       return GetUrlResponse{}, status.Error(http.StatusInternalServerError, err.Error())
