@@ -5,6 +5,8 @@ import (
 	"reflect"
 
 	"github.com/w1png/urlshortener/handlers"
+	"github.com/w1png/urlshortener/logger"
+	"github.com/w1png/urlshortener/middleware"
 	"github.com/w1png/urlshortener/models"
 	"github.com/w1png/urlshortener/storage"
 	"github.com/w1png/urlshortener/utils"
@@ -27,6 +29,11 @@ func onStartup() error {
     return err
   }
 
+  err = logger.InitLogger()
+  if err != nil {
+    return err
+  }
+
 	err = storage.InitSelectedStorage()
 	if err != nil {
 		return err
@@ -43,24 +50,26 @@ func onStartup() error {
 func main() {
 	err := onStartup()
 	if err != nil {
-		log.Fatal(err)
+    log.Fatal(err.Error())
 	}
 
 	if reflect.TypeOf(storage.SelectedStorage) == reflect.TypeOf(&storage.PostgresStorage{}) {
 		err = autoMigrate()
 		if err != nil {
-			log.Fatal(err)
+      logger.LoggerInstance.Fatal(err.Error())
 		}
 	}
 
   log.Println("Starting http server on port 8081")
 	server := NewApiServer(":8081")
   
+  server.UseMiddleware(middleware.LoggingMiddleware)
+
   server.RegisterHandlerFunc("/api/v1/urls", handlers.CreateUrl, "POST")
   server.RegisterHandlerFunc("/api/v1/urls/{alias}", handlers.GetUrl, "GET")
 
 	err = server.Run()
 	if err != nil {
-		log.Fatal(err)
+    logger.LoggerInstance.Fatal(err.Error())
 	}
 }

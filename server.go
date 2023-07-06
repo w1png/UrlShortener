@@ -26,3 +26,7 @@ func (s *ApiServer) RegisterHandlerFunc(path string, f func(w http.ResponseWrite
   s.router.HandleFunc(path, f).Methods(method)
 }
 
+func (s *ApiServer) UseMiddleware(f func(http.Handler) http.Handler) {
+  s.router.Use(f)
+}
+

@@ -16,6 +16,8 @@ type Config struct {
   PostgresTestDatabase string
 
   UrlGRPCServiceHost string
+
+  LoggerType string
 }
 
 func (c *Config) Init() error {
@@ -32,7 +34,12 @@ func (c *Config) Init() error {
   c.PostgresDatabase = os.Getenv("POSTGRES_DATABASE")
   c.PostgresTestDatabase = os.Getenv("POSTGRES_TEST_DATABASE")
 
-  c.UrlGRPCServiceHost = os.Getenv("URL_GRPC_SERVICE_HOST")
+  c.UrlGRPCServiceHost, ok = os.LookupEnv("URL_GRPC_SERVICE_HOST")
+  if !ok {
+    return NewEnvironmentVariableError("URL_GRPC_SERVICE_HOST")
+  }
+
+  c.LoggerType = os.Getenv("LOGGER_TYPE")
   
   return nil
 }
