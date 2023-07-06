@@ -19,6 +19,12 @@ func InitSelectedStorage() error {
 		if err != nil {
 			return err
 		}
+  case "redis":
+    var err error
+    SelectedStorage, err = NewRedisStorage(false)
+    if err != nil {
+      return err
+    }
   default:
     return utils.NewEnvironmentVariableError("STORAGE_TYPE")
 	}

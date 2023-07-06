@@ -31,6 +31,17 @@ func TestInitSelectedStorage_Postgres(t *testing.T) {
   assert.Equal(t, reflect.TypeOf(&PostgresStorage{}), reflect.TypeOf(SelectedStorage))
 }
 
+func TestInitSelectedStorage_Redis(t *testing.T) {
+  storage_type := os.Getenv("STORAGE_TYPE")
+  defer os.Setenv("STORAGE_TYPE", storage_type)
+
+  os.Setenv("STORAGE_TYPE", "redis")
+  err := InitSelectedStorage()
+  assert.Nil(t, err)
+  assert.IsType(t, &RedisStorage{}, SelectedStorage)
+  assert.Equal(t, reflect.TypeOf(&RedisStorage{}), reflect.TypeOf(SelectedStorage))
+}
+
 func TestInitSelectedStorage_EnvironmentVariableError(t *testing.T) {
   storage_type := os.Getenv("STORAGE_TYPE")
   defer os.Setenv("STORAGE_TYPE", storage_type)
