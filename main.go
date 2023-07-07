@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"reflect"
+  "github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/w1png/urlshortener/handlers"
 	"github.com/w1png/urlshortener/logger"
@@ -64,9 +65,12 @@ func main() {
 	server := NewApiServer(":8081")
   
   server.UseMiddleware(middleware.LoggingMiddleware)
+  server.UseMiddleware(middleware.PrometheusDurationMiddleware)
+  server.UseMiddleware(middleware.PrometheusCounterMiddleware)
 
   server.RegisterHandlerFunc("/api/v1/urls", handlers.CreateUrl, "POST")
   server.RegisterHandlerFunc("/api/v1/urls/{alias}", handlers.GetUrl, "GET")
+  server.RegisterHandlerFunc("/metrics", promhttp.Handler().ServeHTTP, "GET")
 
 	err = server.Run()
 	if err != nil {
