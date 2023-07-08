@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	"gorm.io/gorm"
+  "github.com/graphql-go/graphql"
 )
 
 const ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_"
@@ -14,6 +15,20 @@ type Url struct {
 
 	Alias string `gorm:"unique;not null" json:"alias"`
 	Url   string `gorm:"not null" json:"url"`
+}
+
+func (u Url) GraphQLType() *graphql.Object {
+  return graphql.NewObject(graphql.ObjectConfig{
+    Name: "Url",
+    Fields: graphql.Fields{
+      "alias": &graphql.Field{
+        Type: graphql.String,
+      },
+      "url": &graphql.Field{
+        Type: graphql.String,
+      },
+    },
+  })
 }
 
 func generateAlias() string {

@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 	"reflect"
-  "github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
+	"github.com/w1png/urlshortener/graphqlHandlers"
 	"github.com/w1png/urlshortener/handlers"
 	"github.com/w1png/urlshortener/logger"
 	"github.com/w1png/urlshortener/middleware"
@@ -71,6 +72,14 @@ func main() {
   server.RegisterHandlerFunc("/api/v1/urls", handlers.CreateUrl, "POST")
   server.RegisterHandlerFunc("/api/v1/urls/{alias}", handlers.GetUrl, "GET")
   server.RegisterHandlerFunc("/metrics", promhttp.Handler().ServeHTTP, "GET")
+
+  graphQLHTTPHandler, err := graphqlHandlers.GetHTTPHandler()
+  if err != nil {
+    logger.LoggerInstance.Fatal(err.Error())
+  }
+  server.RegisterHandlerFunc("/graphql", graphQLHTTPHandler.ServeHTTP, "POST", "GET")
+  // get url: curl -g 'http://localhost:8081/graphql?query={url(alias:"test"){alias,url}}'
+  // create url: curl -g 'http://localhost:8081/graphql?query=mutation+_{createUrl(url:"test"){alias,url}}'
 
 	err = server.Run()
 	if err != nil {
