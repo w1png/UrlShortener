@@ -27,8 +27,8 @@ func (s *ApiServer) Run() error {
   )(s.router))
 }
 
-func (s *ApiServer) RegisterHandlerFunc(path string, f func(w http.ResponseWriter, r *http.Request), method string) {
-  s.router.HandleFunc(path, f).Methods(method)
+func (s *ApiServer) RegisterHandlerFunc(path string, f func(w http.ResponseWriter, r *http.Request), methods ...string) {
+  s.router.HandleFunc(path, f).Methods(methods...)
 }
 
 func (s *ApiServer) UseMiddleware(f func(http.Handler) http.Handler) {
